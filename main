@@ -1,0 +1,695 @@
+warn('[TEMPEST HUB] Loading Bypass')
+wait(1)
+warn('[TEMPEST HUB] Loading Ui')
+wait(1)
+local repo = 'https://raw.githubusercontent.com/violin-suzutsuki/LinoriaLib/main/'
+
+local Library = loadstring(game:HttpGet(repo .. 'Library.lua'))()
+local ThemeManager = loadstring(game:HttpGet(repo .. 'addons/ThemeManager.lua'))()
+local SaveManager = loadstring(game:HttpGet(repo .. 'addons/SaveManager.lua'))()
+
+local Window = Library:CreateWindow({
+    Title = 'Tempest Hub | Anime Champions Simulator',
+    Center = true,
+    AutoShow = true,
+    TabPadding = 8,
+    MenuFadeTime = 0.2
+})
+
+Library:Notify('Loading Anime Champions Simulator', 5)
+
+warn('[TEMPEST HUB] Loading Functions')
+wait(1)
+
+
+local function autospirit()
+while getgenv().autospirit == true do
+function GetCFrame(obj)
+    local cframe = obj
+    local objType = typeof(obj)
+    if objType == "Vector3" then
+        cframe = CFrame.new(obj)
+    elseif objType == "table" then
+        cframe = CFrame.new(unpack(obj))
+    elseif objType == "string" then
+        cframe = CFrame.new(unpack(obj:split(",")))
+    elseif objType == "Instance" then
+        if obj:IsA("Model") then
+            cframe = obj:GetModelCFrame()
+        elseif obj:IsA("Part") then
+            cframe = obj.CFrame
+        end
+    end
+    return cframe
+end
+wait()
+
+local spirit = workspace.Effects.Spirit.HumanoidRootPart
+local cframeDoPersonagem
+
+if spirit then
+    cframeDoPersonagem = GetCFrame(spirit)
+end
+
+if cframeDoPersonagem then
+        game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(cframeDoPersonagem)
+        wait()
+        end
+    end
+end
+
+
+local function autoraidnamek()
+while getgenv().autoraidnamek == true do
+    function GetCFrame(obj)
+        local cframe = obj
+        local objType = typeof(obj)
+        if objType == "Vector3" then
+            cframe = CFrame.new(obj)
+        elseif objType == "table" then
+            cframe = CFrame.new(unpack(obj))
+        elseif objType == "string" then
+            cframe = CFrame.new(unpack(obj:split(",")))
+        elseif objType == "Instance" then
+            if obj:IsA("Model") then
+                cframe = obj:GetModelCFrame()
+            elseif obj:IsA("Part") then
+                cframe = obj.CFrame
+            end
+        end
+        return cframe
+    end
+    
+    while true do
+        wait()  -- Wait for a moment before checking again
+    
+        local namekR = workspace.Worlds.Raids.Enemies
+        local cframeDoPersonagem
+    
+        if namekR then
+            if namekR:FindFirstChild("Ginyu") then
+                -- If Ginyu is spawned, teleport to Ginyu
+                cframeDoPersonagem = GetCFrame(namekR.Ginyu)
+            else
+                -- Teleport to the first enemy found in the workspace
+                for _, enemy in pairs(namekR:GetChildren()) do
+                    if enemy:IsA("Model") then
+                        cframeDoPersonagem = GetCFrame(enemy)
+                        break  -- Stop looping after finding the first enemy
+                    end
+                end
+            end
+        end
+    
+        if cframeDoPersonagem then
+            game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(cframeDoPersonagem)
+            end
+        end
+    end
+end
+
+local function autocollectchest()
+    while getgenv().autocollectchest == true do
+        function GetCFrame(obj)
+            local cframe = obj
+            local objType = typeof(obj)
+            if objType == "Vector3" then
+                cframe = CFrame.new(obj)
+            elseif objType == "table" then
+                cframe = CFrame.new(unpack(obj))
+            elseif objType == "string" then
+                cframe = CFrame.new(unpack(obj:split(",")))
+            elseif objType == "Instance" then
+                if obj:IsA("Model") then
+                    cframe = obj:GetModelCFrame()
+                elseif obj:IsA("Part") then
+                    cframe = obj.CFrame
+                end
+            end
+            return cframe
+        end
+        wait()
+        
+        local namekR = workspace.Worlds.Raids["2"].ZoneSide2.Chests.RaidChest
+        local namekR2 = workspace.Worlds.Raids["2"].Zone5.Chests.ChestSpawn
+        local cframeDoPersonagem
+        
+        if namekR and not namekR2 then
+            cframeDoPersonagem = GetCFrame(namekR)
+        elseif namekR2 and not namekR then
+            cframeDoPersonagem = GetCFrame(namekR2)
+        end
+        
+        if cframeDoPersonagem then
+            game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(cframeDoPersonagem)
+            game:GetService("VirtualInputManager"):SendKeyEvent(true,Enum.KeyCode.E,false,game) 
+            wait()
+        else
+            wait(1)
+        end
+    end
+end
+
+local function autocatch()
+    while getgenv().autocatch == true do
+        local args = {
+            [1] = "TalentToken",
+            [2] = 1
+        }
+        
+        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Drops"):WaitForChild("Items"):FireServer(unpack(args))
+        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Drops"):WaitForChild("CaughtSpirit"):FireServer()        
+        wait()
+    end
+end
+
+function SetWalkSpeed(Value)
+    local walkSpeed = Value
+    
+    local UIS = game:GetService("UserInputService")
+    local RS = game:GetService("RunService")
+    local W, A, S, D
+    local xVelo, yVelo
+    
+    while true do
+        wait()
+        local HRP = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+        local C = game.Workspace.CurrentCamera
+        local LV = C.CFrame.LookVector
+
+        for i, v in pairs(UIS:GetKeysPressed()) do
+            if v.KeyCode == Enum.KeyCode.W then
+                W = true
+            end
+            if v.KeyCode == Enum.KeyCode.A then
+                A = true
+            end
+            if v.KeyCode == Enum.KeyCode.S then
+                S = true
+            end
+            if v.KeyCode == Enum.KeyCode.D then
+                D = true
+            end
+        end
+
+        if W == true and S == true then
+            yVelo = false
+            W, S = nil, nil
+        end
+
+        if A == true and D == true then
+            xVelo = false
+            A, D = nil, nil
+        end
+
+        if yVelo ~= false then
+            if W == true then
+                if xVelo ~= false then
+                    if A == true then
+                        local LeftLV = (C.CFrame * CFrame.Angles(0, math.rad(45), 0)).LookVector
+                        HRP.Velocity = Vector3.new((LeftLV.X * walkSpeed), HRP.Velocity.Y, (LeftLV.Z * walkSpeed))
+                        W, A = nil, nil
+                    else
+                        if D == true then
+                            local RightLV = (C.CFrame * CFrame.Angles(0, math.rad(-45), 0)).LookVector
+                            HRP.Velocity = Vector3.new((RightLV.X * walkSpeed), HRP.Velocity.Y, (RightLV.Z * walkSpeed))
+                            W, D = nil, nil
+                        end
+                    end
+                end
+            else
+                if S == true then
+                    if xVelo ~= false then
+                        if A == true then
+                            local LeftLV = (C.CFrame * CFrame.Angles(0, math.rad(135), 0)).LookVector
+                            HRP.Velocity = Vector3.new((LeftLV.X * walkSpeed), HRP.Velocity.Y, (LeftLV.Z * walkSpeed))
+                            S, A = nil, nil
+                        else
+                            if D == true then
+                                local RightLV = (C.CFrame * CFrame.Angles(0, math.rad(-135), 0)).LookVector
+                                HRP.Velocity = Vector3.new((RightLV.X * walkSpeed), HRP.Velocity.Y, (RightLV.Z * walkSpeed))
+                                S, D = nil, nil
+                            end
+                        end
+                    end
+                end
+            end
+        end
+
+        if W == true then
+            HRP.Velocity = Vector3.new((LV.X * walkSpeed), HRP.Velocity.Y, (LV.Z * walkSpeed))
+        end
+        if S == true then
+            HRP.Velocity = Vector3.new(-(LV.X * walkSpeed), HRP.Velocity.Y, -(LV.Z * walkSpeed))
+        end
+        if A == true then
+            local LeftLV = (C.CFrame * CFrame.Angles(0, math.rad(90), 0)).LookVector
+            HRP.Velocity = Vector3.new((LeftLV.X * walkSpeed), HRP.Velocity.Y, (LeftLV.Z * walkSpeed))
+        end
+        if D == true then
+            local RightLV = (C.CFrame * CFrame.Angles(0, math.rad(-90), 0)).LookVector
+            HRP.Velocity = Vector3.new((RightLV.X * walkSpeed), HRP.Velocity.Y, (RightLV.Z * walkSpeed))
+        end
+
+        xVelo, yVelo, W, A, S, D = nil, nil, nil, nil, nil, nil
+        wait()
+    end
+end
+
+function tptohub()
+    local args = {
+        [1] = "Hub"
+    }
+    
+    game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Player"):WaitForChild("Teleport"):FireServer(unpack(args))
+end    
+
+function tptodbz()
+    local args = {
+        [1] = "DBZ"
+    }
+    
+    game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Player"):WaitForChild("Teleport"):FireServer(unpack(args))  
+end
+
+function tptoop()
+    local args = {
+        [1] = "OnePiece"
+    }
+    
+    game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Player"):WaitForChild("Teleport"):FireServer(unpack(args))
+end
+
+function tptomha()
+    local args = {
+        [1] = "MHA"
+    }
+    
+    game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Player"):WaitForChild("Teleport"):FireServer(unpack(args))
+end    
+
+function tptonaruto()
+    local args = {
+        [1] = "Naruto"
+    }
+    
+    game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Player"):WaitForChild("Teleport"):FireServer(unpack(args))  
+end
+
+function tptojojo()
+    local args = {
+        [1] = "Jojo"
+    }
+    
+    game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Player"):WaitForChild("Teleport"):FireServer(unpack(args))  
+end
+
+function tptodemon()
+    local args = {
+        [1] = "DemonSlayer"
+    }
+    
+    game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Player"):WaitForChild("Teleport"):FireServer(unpack(args))
+end    
+
+function tptoraid()
+    local args = {
+        [1] = "Hub"
+    }
+    
+    game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Player"):WaitForChild("Teleport"):FireServer(unpack(args))
+    wait(1)
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-2105.59375, 133.411728, -3081.61133, -0.99997282, 6.93363376e-08, 0.00737391552, 6.94921454e-08, 1, 2.08729301e-08, -0.00737391552, 2.13847908e-08, -0.99997282)
+end
+
+function tptorerolls()
+    local args = {
+        [1] = "Hub"
+    }
+    
+    game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Player"):WaitForChild("Teleport"):FireServer(unpack(args))
+    wait(1)
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-1868.07593, 155.563263, -3297.20972, 0.130560055, -5.75710608e-08, -0.991440415, 4.34134364e-08, 1, -5.23511048e-08, 0.991440415, -3.62068739e-08, 0.130560055)
+end
+
+function tptotower()
+    local args = {
+        [1] = "Hub"
+    }
+    
+    game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Player"):WaitForChild("Teleport"):FireServer(unpack(args))
+    wait(1)
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-2105.23315, 140.843796, -3602.97437, 0.999842823, -3.23348743e-08, 0.0177296139, 3.23651044e-08, 1, -1.41822454e-09, -0.0177296139, 1.99182248e-09, 0.999842823)
+end
+
+function narutoroll()
+    while getgenv().narutoroll == true do
+        local args = {
+            [1] = workspace:WaitForChild("Worlds"):WaitForChild("Naruto"):WaitForChild("NarutoOrb"),
+            [2] = 2
+        }
+
+        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Orbs"):WaitForChild("OpenOrbs"):FireServer(unpack(args))
+        wait()
+    end
+end
+
+function mharoll()
+    while getgenv().mharoll == true do
+        local args = {
+            [1] = workspace:WaitForChild("Worlds"):WaitForChild("MHA"):WaitForChild("MHAOrb"),
+            [2] = 3
+        }
+        
+        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Orbs"):WaitForChild("OpenOrbs"):FireServer(unpack(args))
+        wait()
+    end
+end
+
+function OProll()
+    while getgenv().OProll == true do
+        local args = {
+            [1] = workspace:WaitForChild("Worlds"):WaitForChild("OnePiece"):WaitForChild("OnePieceOrb"),
+            [2] = 3
+        }
+        
+        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Orbs"):WaitForChild("OpenOrbs"):FireServer(unpack(args))        
+        wait()
+    end
+end
+
+function DBZroll()
+    while getgenv().DBZroll == true do
+        local args = {
+            [1] = workspace:WaitForChild("Worlds"):WaitForChild("DBZ"):WaitForChild("DBZOrb"),
+            [2] = 3
+        }
+        
+        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Orbs"):WaitForChild("OpenOrbs"):FireServer(unpack(args))        
+        wait()
+    end
+end
+
+function Jojoroll()
+    while getgenv().Jojoroll == true do
+        local args = {
+            [1] = workspace:WaitForChild("Worlds"):WaitForChild("Jojo"):WaitForChild("BizarreOrb"),
+            [2] = 3
+        }
+        
+        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Orbs"):WaitForChild("OpenOrbs"):FireServer(unpack(args))        
+        wait()
+    end
+end
+
+function Knyroll()
+    while getgenv().Knyroll == true do
+        local args = {
+            [1] = workspace:WaitForChild("Worlds"):WaitForChild("DemonSlayer"):WaitForChild("DemonOrb"),
+            [2] = 3
+        }
+        
+        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Orbs"):WaitForChild("OpenOrbs"):FireServer(unpack(args))     
+        wait()
+    end
+end
+
+warn('[TEMPEST HUB] Checking Functions')
+wait(1)
+
+local Tabs = {
+    Main = Window:AddTab('Main'),
+}
+
+local LeftGroupBox = Tabs.Main:AddLeftGroupbox('Player')
+
+LeftGroupBox:AddSlider('Walkspeed', {
+    Text = 'Walkspeed',
+    Default = 16,
+    Min = 16,
+    Max = 100,
+    Rounding = 1,
+    Compact = false,
+    Callback = function(Value)
+        SetWalkSpeed(Value)
+    end
+})
+
+local Tabs = {
+    Farm = Window:AddTab('Farm'),
+}
+
+local LeftGroupBox = Tabs.Farm:AddLeftGroupbox('Spirit')
+
+LeftGroupBox:AddToggle('Catch Spirit', {
+    Text = 'Catch Spirit',
+    Default = false,
+    Tooltip = 'Catch Spirit',
+    Callback = function(Value)
+        getgenv().autocatch = Value
+        autocatch()
+    end
+})
+
+local RightGroupBox = Tabs.Farm:AddRightGroupbox('Raid')
+
+RightGroupBox:AddToggle('Auto Raid', {
+    Text = 'Auto Raid',
+    Default = false,
+    Tooltip = 'Auto Raid',
+    Callback = function(Value)
+        getgenv().autoraidnamek = Value
+        autoraidnamek()
+    end
+})
+
+RightGroupBox:AddToggle('Auto Collect Chest', {
+    Text = 'Auto Collect Chest',
+    Default = false,
+    Tooltip = 'Auto Collect Chest',
+    Callback = function(Value)
+        getgenv().autocollectchest = Value
+        autocollectchest()
+    end
+})
+
+local Tabs = {
+    Farm = Window:AddTab('Roll'),
+}
+
+local LeftGroupBox = Tabs.Farm:AddLeftGroupbox('Roll Unit')
+
+LeftGroupBox:AddToggle('DBZ Egg', {
+    Text = 'DBZ Egg',
+    Default = false,
+    Tooltip = 'DBZ Egg',
+    Callback = function(Value)
+        getgenv().DBZroll = Value
+        DBZroll()
+    end
+})
+
+LeftGroupBox:AddToggle('One Piece Egg', {
+    Text = 'One Piece Egg',
+    Default = false,
+    Tooltip = 'One Piece Egg',
+    Callback = function(Value)
+        getgenv().OProll = Value
+        OProll()
+    end
+})
+
+LeftGroupBox:AddToggle('MHA Egg', {
+    Text = 'MHA Egg',
+    Default = false,
+    Tooltip = 'MHA Egg',
+    Callback = function(Value)
+        getgenv().mharoll = Value
+        mharoll()
+    end
+})
+
+LeftGroupBox:AddToggle('Naruto Egg', {
+    Text = 'Naruto Egg',
+    Default = false,
+    Tooltip = 'Naruto Egg',
+    Callback = function(Value)
+        getgenv().narutoroll = Value
+        narutoroll()
+    end
+})
+
+LeftGroupBox:AddToggle('Jojo Egg', {
+    Text = 'Jojo Egg',
+    Default = false,
+    Tooltip = 'Jojo Egg',
+    Callback = function(Value)
+        getgenv().Jojoroll = Value
+        Jojoroll()
+    end
+})
+
+LeftGroupBox:AddToggle('Demon Slayer Egg', {
+    Text = 'Demon Slayer Egg',
+    Default = false,
+    Tooltip = 'Demon Slayer Egg',
+    Callback = function(Value)
+        getgenv().Knyroll = Value
+        Knyroll()
+    end
+})
+
+local Tabs = {
+    Farm = Window:AddTab('Teleport'),
+}
+
+local LeftGroupBox = Tabs.Farm:AddLeftGroupbox('World')
+
+local MyButton = LeftGroupBox:AddButton({
+    Text = 'Teleport To Hub',
+    Func = function()
+        getgenv().tptohub = Value
+        tptohub()
+    end,
+    DoubleClick = false,
+})
+
+local MyButton = LeftGroupBox:AddButton({
+    Text = 'Teleport To DBZ',
+    Func = function()
+        getgenv().tptodbz = Value
+        tptodbz()
+    end,
+    DoubleClick = false,
+})
+
+local MyButton = LeftGroupBox:AddButton({
+    Text = 'Teleport To One Piece',
+    Func = function()
+        getgenv().tptoop = Value
+        tptoop()
+    end,
+    DoubleClick = false,
+})
+
+local MyButton = LeftGroupBox:AddButton({
+    Text = 'Teleport To MHA',
+    Func = function()
+        getgenv().tptomha = Value
+        tptomha()
+    end,
+    DoubleClick = false,
+})
+
+local MyButton = LeftGroupBox:AddButton({
+    Text = 'Teleport To Naruto',
+    Func = function()
+        getgenv().tptonaruto = Value
+        tptonaruto()
+    end,
+    DoubleClick = false,
+})
+
+local MyButton = LeftGroupBox:AddButton({
+    Text = 'Teleport To Jojo',
+    Func = function()
+        getgenv().tptojojo = Value
+        tptojojo()
+    end,
+    DoubleClick = false,
+})
+
+local MyButton = LeftGroupBox:AddButton({
+    Text = 'Teleport To Kimetsu',
+    Func = function()
+        getgenv().tptodemon = Value
+        tptodemon()
+    end,
+    DoubleClick = false,
+})
+
+local RightGroupBox = Tabs.Farm:AddRightGroupbox('Others')
+
+local MyButton = RightGroupBox:AddButton({
+    Text = 'Teleport To Raid',
+    Func = function()
+        getgenv().tptoraid = Value
+        tptoraid()
+    end,
+    DoubleClick = false,
+})
+
+local MyButton = RightGroupBox:AddButton({
+    Text = 'Teleport To Rerolls',
+    Func = function()
+        getgenv().tptorerolls = Value
+        tptorerolls()
+    end,
+    DoubleClick = false,
+})
+
+local MyButton = RightGroupBox:AddButton({
+    Text = 'Teleport To Tower',
+    Func = function()
+        getgenv().tptotower = Value
+        tptotower()
+    end,
+    DoubleClick = false,
+})
+
+local FrameTimer = tick()
+local FrameCounter = 0
+local FPS = 60
+
+local WatermarkConnection
+WatermarkConnection = game:GetService('RunService').RenderStepped:Connect(function()
+    FrameCounter = FrameCounter + 1
+
+    if (tick() - FrameTimer) >= 1 then
+        FPS = FrameCounter
+        FrameTimer = tick()
+        FrameCounter = 0
+    end
+
+    Library:SetWatermark(('Tempest Hub | %s fps | %s ms'):format(
+        math.floor(FPS),
+        math.floor(game:GetService('Stats').Network.ServerStatsItem['Data Ping']:GetValue())
+    ))
+end)
+
+local TabsUI = {
+    ['UI Settings'] = Window:AddTab('UI Settings'),
+}
+
+Library:OnUnload(function()
+    WatermarkConnection:Disconnect()
+    print('Unloaded!')
+    Library.Unloaded = true
+end)
+
+-- UI Settings
+local MenuGroup = TabsUI['UI Settings']:AddLeftGroupbox('Menu')
+
+
+MenuGroup:AddButton('Unload', function() Library:Unload() end)
+MenuGroup:AddLabel('Menu bind'):AddKeyPicker('MenuKeybind', { Default = 'End', NoUI = true, Text = 'Menu keybind' })
+
+-- Define a tabela 'Options'
+Library.ToggleKeybind = Options.MenuKeybind
+
+ThemeManager:SetLibrary(Library)
+SaveManager:SetLibrary(Library)
+
+ThemeManager:SetFolder('Tempest Hub')
+SaveManager:SetFolder('Tempest Hub/Grand Piece Online')
+
+SaveManager:BuildConfigSection(TabsUI['UI Settings'])
+
+ThemeManager:ApplyToTab(TabsUI['UI Settings'])
+
+SaveManager:LoadAutoloadConfig()
+
+for i,v in pairs(getconnections(game.Players.LocalPlayer.Idled)) do
+    v:Disable()
+end
+warn('[TEMPEST HUB] Loaded')
