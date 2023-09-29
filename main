@@ -58,89 +58,95 @@ if cframeDoPersonagem then
     end
 end
 
+local function autoraid()
+    while getgenv().autoraid == true do
+        local workspaceWorlds = workspace:FindFirstChild("Worlds")
 
-local function autoraidnamek()
-while getgenv().autoraidnamek == true do
-    function GetCFrame(obj)
-        local cframe = obj
-        local objType = typeof(obj)
-        if objType == "Vector3" then
-            cframe = CFrame.new(obj)
-        elseif objType == "table" then
-            cframe = CFrame.new(unpack(obj))
-        elseif objType == "string" then
-            cframe = CFrame.new(unpack(obj:split(",")))
-        elseif objType == "Instance" then
-            if obj:IsA("Model") then
-                cframe = obj:GetModelCFrame()
-            elseif obj:IsA("Part") then
-                cframe = obj.CFrame
-            end
-        end
-        return cframe
-    end
-    
-    while true do
-        wait()  -- Wait for a moment before checking again
-    
-        local namekR = workspace.Worlds.Raids.Enemies
-        local cframeDoPersonagem
-    
-        if namekR then
-            if namekR:FindFirstChild("Ginyu") then
-                -- If Ginyu is spawned, teleport to Ginyu
-                cframeDoPersonagem = GetCFrame(namekR.Ginyu)
-            else
-                -- Teleport to the first enemy found in the workspace
-                for _, enemy in pairs(namekR:GetChildren()) do
-                    if enemy:IsA("Model") then
-                        cframeDoPersonagem = GetCFrame(enemy)
-                        break  -- Stop looping after finding the first enemy
+        if workspaceWorlds then
+            local hub = workspaceWorlds:FindFirstChild("Hub")
+            local raids = workspaceWorlds:FindFirstChild("Raids")
+
+            if raids then
+                local function GetCFrameAbove(obj, height)
+                    local cframe = nil
+                    local objType = typeof(obj)
+
+                    if objType == "Vector3" or objType == "table" or objType == "string" then
+                        local position
+                        if objType == "Vector3" then
+                            position = obj
+                        elseif objType == "table" then
+                            position = Vector3.new(obj[1], obj[2], obj[3])
+                        elseif objType == "string" then
+                            local values = obj:split(",")
+                            position = Vector3.new(tonumber(values[1]), tonumber(values[2]), tonumber(values[3]))
+                        end
+                        cframe = CFrame.new(position.x, position.y + height, position.z)
+                    elseif objType == "Instance" then
+                        if obj:IsA("Model") then
+                            cframe = obj:GetPrimaryPartCFrame()
+                        elseif obj:IsA("Part") then
+                            cframe = obj.CFrame + Vector3.new(0, height, 0)
+                        end
+                    end
+                    return cframe
+                end
+
+                local namekR = raids:FindFirstChild("Enemies")
+                local cframeDoPersonagem
+
+                if namekR then
+                    local ginyu = namekR:FindFirstChild("Ginyu")
+                    if ginyu then
+                        -- If Ginyu is present, teleport above him with a height of 5 units
+                        cframeDoPersonagem = GetCFrameAbove(ginyu.CFrame.p, 5)
+                    else
+                        -- Teleport above the first enemy found in the workspace with a height of 30 units
+                        for _, enemy in pairs(namekR:GetChildren()) do
+                            if enemy:IsA("Model") then
+                                cframeDoPersonagem = GetCFrameAbove(enemy:GetPrimaryPartCFrame().p, 30)
+                                break -- Stop iterating after finding the first enemy
+                            end
+                        end
                     end
                 end
+
+                if cframeDoPersonagem then
+                    game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(cframeDoPersonagem)
+                    print("Successfully teleported!")
+                else
+                    print("No enemies found to teleport to.")
+                end
+            else
+                print("workspace.Worlds.Raids does not exist")
             end
+        else
+            print("workspace.Worlds does not exist")
         end
-    
-        if cframeDoPersonagem then
-            game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(cframeDoPersonagem)
-            end
-        end
+        wait(1) -- Wait for a second before checking again (to avoid excessive loop execution)
     end
 end
 
 local function autocollectchest()
     while getgenv().autocollectchest == true do
-        local enemiesObject = workspace.Worlds.Raids:FindFirstChild("Enemies")
-
-        if enemiesObject then
-            local children = enemiesObject:GetChildren()
-            if #children > 0 then
-                print("O objeto 'Enemies' existe em workspace.Worlds.Raids e há algo dentro.")
-                wait()
-            else
-                print("O objeto 'Enemies' existe em workspace.Worlds.Raids, mas está vazio.")
-                
-                -- Teleportar o jogador para as coordenadas desejadas
-                local player = game.Players.LocalPlayer
-                local humanoidRootPart = player.Character:WaitForChild("HumanoidRootPart")
-                humanoidRootPart.CFrame = CFrame.new(Vector3.new(5248.93311, 32.5717812, 8251.6543), Vector3.new(-0.997561932, 0, -0.0697919354, 0, 1, 0, 0.0697919354, 0, -0.997561932))
-                wait(1)
-                game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.E, false, game) 
-                wait(1)
-                local player = game.Players.LocalPlayer
-                local humanoidRootPart = player.Character:WaitForChild("HumanoidRootPart")
-                humanoidRootPart.CFrame = CFrame.new(Vector3.new(6455.70508, 37.1220474, 10310.3096), Vector3.new(-0.367008507, 2.09918785e-08, 0.930217564, -4.6298652e-08, 1, -4.08333278e-08, -0.930217564, -5.80539989e-08, -0.367008507))
-                game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.E, false, game) 
-                wait(1)
-            end
+        local raid = workspace.Worlds.Raids["1"]
+        if raid and raid.Zone9 and raid.Zone9.Chests and raid.Zone9.Chests:FindFirstChild("RaidChest") then
+            local raidChest = raid.Zone9.Chests:WaitForChild("RaidChest")
+            local targetCFrame = CFrame.new(4016.09473, -149.956055, 2765.06982)
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = targetCFrame
+            wait()  -- Espera um curto período de tempo para garantir que o jogador esteja na posição certa
+            game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.E, false, game)
+            wait(2)
+            local args = {
+                [1] = "Hub"
+            }
+            
+            game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Player"):WaitForChild("Teleport"):FireServer(unpack(args))
         else
-            print("O objeto 'Enemies' NÃO existe em workspace.Worlds.Raids")
-            wait()
+            break
         end
+        wait()  -- Evita o loop infinito consumindo muita CPU
     end
-    
-    -- Fora do loop, após o loop ser encerrado
-    print("O loop 'autocollectchest' foi encerrado.")
 end
 
 local function autocatch()
@@ -335,6 +341,26 @@ function tptotower()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-2105.23315, 140.843796, -3602.97437, 0.999842823, -3.23348743e-08, 0.0177296139, 3.23651044e-08, 1, -1.41822454e-09, -0.0177296139, 1.99182248e-09, 0.999842823)
 end
 
+function tptomachine()
+    local args = {
+        [1] = "Hub"
+    }
+    
+    game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Player"):WaitForChild("Teleport"):FireServer(unpack(args))
+    wait(1)
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-1931.01208, 131.341568, -3130.26685, -0.66237855, -3.3508865e-08, -0.74916929, -6.27841672e-08, 1, 1.07826379e-08, 0.74916929, 5.41781553e-08, -0.66237855)
+end
+
+function tptocosmic()
+    local args = {
+        [1] = "Hub"
+    }
+    
+    game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Player"):WaitForChild("Teleport"):FireServer(unpack(args))
+    wait(1)
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-1925.22595, 131.291443, -3486.85522, 0.684826851, 2.0186441e-08, -0.728705823, -6.4478316e-09, 1, 2.16421938e-08, 0.728705823, -1.01225828e-08, 0.684826851)
+end
+
 function narutoroll()
     while getgenv().narutoroll == true do
         local args = {
@@ -407,6 +433,19 @@ function Knyroll()
     end
 end
 
+function jjkroll()
+    while getgenv().jjkroll == true do
+        local args = {
+            [1] = workspace:WaitForChild("Worlds"):WaitForChild("JJK"):WaitForChild("JJKOrb"),
+            [2] = 3
+        }
+        
+        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Orbs"):WaitForChild("OpenOrbs"):FireServer(unpack(args))
+        wait()
+    end
+end
+
+
 local selectionStory = nil
 local selectionDifficulty = nil
 
@@ -418,6 +457,7 @@ local storylevels = {
     ['Naruto Raid'] = 'Naruto',
     ['Jojo Raid'] = 'Jojo',
     ['Demon Slayer Raid'] = 'DemonSlayer',
+    ['Jujutsu Raid'] = 'JJK'
 }
 
 -- Tabela de mapeamento para dificuldades
@@ -520,7 +560,7 @@ local RightGroupBox = Tabs.Farm:AddRightGroupbox('Raid')
 -- Adicione dropdown para selecionar a história
 local storyDropdown = RightGroupBox:AddDropdown('Select Raid', {
     Values = {
-        'DBZ RAID', 'One Piece Raid', 'MHA Raid', 'Naruto Raid', 'Jojo Raid', 'Demon Slayer Raid'
+        'DBZ RAID', 'One Piece Raid', 'MHA Raid', 'Naruto Raid', 'Jojo Raid', 'Demon Slayer Raid', 'Jujutsu Raid'
     },
     Default = 1,
     Multi = false,
@@ -556,8 +596,8 @@ RightGroupBox:AddToggle('Auto Raid', {
     Default = false,
     Tooltip = 'Auto Raid',
     Callback = function(Value)
-        getgenv().autoraidnamek = Value
-        autoraidnamek()
+        getgenv().autoraid = Value
+        autoraid()
     end
 })
 
@@ -634,6 +674,16 @@ LeftGroupBox:AddToggle('Demon Slayer Egg', {
     Callback = function(Value)
         getgenv().Knyroll = Value
         Knyroll()
+    end
+})
+
+LeftGroupBox:AddToggle('Jujutsu Egg', {
+    Text = 'Jujutsu Egg',
+    Default = false,
+    Tooltip = 'Jujutsu Egg',
+    Callback = function(Value)
+        getgenv().jjkroll = Value
+        jjkroll()
     end
 })
 
@@ -735,6 +785,24 @@ local MyButton = RightGroupBox:AddButton({
     DoubleClick = false,
 })
 
+local MyButton = RightGroupBox:AddButton({
+    Text = 'Teleport To Machine',
+    Func = function()
+        getgenv().tptomachine = Value
+        tptomachine()
+    end,
+    DoubleClick = false,
+})
+
+local MyButton = RightGroupBox:AddButton({
+    Text = 'Teleport To Cosmic',
+    Func = function()
+        getgenv().tptocosmic = Value
+        tptocosmic()
+    end,
+    DoubleClick = false,
+})
+
 local FrameTimer = tick()
 local FrameCounter = 0
 local FPS = 60
@@ -779,7 +847,7 @@ ThemeManager:SetLibrary(Library)
 SaveManager:SetLibrary(Library)
 
 ThemeManager:SetFolder('Tempest Hub')
-SaveManager:SetFolder('Tempest Hub/Grand Piece Online')
+SaveManager:SetFolder('Tempest Hub/Anime Champions Simulator')
 
 SaveManager:BuildConfigSection(TabsUI['UI Settings'])
 
