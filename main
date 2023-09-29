@@ -110,44 +110,37 @@ end
 
 local function autocollectchest()
     while getgenv().autocollectchest == true do
-        function GetCFrame(obj)
-            local cframe = obj
-            local objType = typeof(obj)
-            if objType == "Vector3" then
-                cframe = CFrame.new(obj)
-            elseif objType == "table" then
-                cframe = CFrame.new(unpack(obj))
-            elseif objType == "string" then
-                cframe = CFrame.new(unpack(obj:split(",")))
-            elseif objType == "Instance" then
-                if obj:IsA("Model") then
-                    cframe = obj:GetModelCFrame()
-                elseif obj:IsA("Part") then
-                    cframe = obj.CFrame
-                end
+        local enemiesObject = workspace.Worlds.Raids:FindFirstChild("Enemies")
+
+        if enemiesObject then
+            local children = enemiesObject:GetChildren()
+            if #children > 0 then
+                print("O objeto 'Enemies' existe em workspace.Worlds.Raids e há algo dentro.")
+                wait()
+            else
+                print("O objeto 'Enemies' existe em workspace.Worlds.Raids, mas está vazio.")
+                
+                -- Teleportar o jogador para as coordenadas desejadas
+                local player = game.Players.LocalPlayer
+                local humanoidRootPart = player.Character:WaitForChild("HumanoidRootPart")
+                humanoidRootPart.CFrame = CFrame.new(Vector3.new(5248.93311, 32.5717812, 8251.6543), Vector3.new(-0.997561932, 0, -0.0697919354, 0, 1, 0, 0.0697919354, 0, -0.997561932))
+                wait(1)
+                game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.E, false, game) 
+                wait(1)
+                local player = game.Players.LocalPlayer
+                local humanoidRootPart = player.Character:WaitForChild("HumanoidRootPart")
+                humanoidRootPart.CFrame = CFrame.new(Vector3.new(6455.70508, 37.1220474, 10310.3096), Vector3.new(-0.367008507, 2.09918785e-08, 0.930217564, -4.6298652e-08, 1, -4.08333278e-08, -0.930217564, -5.80539989e-08, -0.367008507))
+                game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.E, false, game) 
+                wait(1)
             end
-            return cframe
-        end
-        wait()
-        
-        local namekR = workspace.Worlds.Raids["2"].ZoneSide2.Chests.RaidChest
-        local namekR2 = workspace.Worlds.Raids["2"].Zone5.Chests.ChestSpawn
-        local cframeDoPersonagem
-        
-        if namekR and not namekR2 then
-            cframeDoPersonagem = GetCFrame(namekR)
-        elseif namekR2 and not namekR then
-            cframeDoPersonagem = GetCFrame(namekR2)
-        end
-        
-        if cframeDoPersonagem then
-            game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(cframeDoPersonagem)
-            game:GetService("VirtualInputManager"):SendKeyEvent(true,Enum.KeyCode.E,false,game) 
-            wait()
         else
-            wait(1)
+            print("O objeto 'Enemies' NÃO existe em workspace.Worlds.Raids")
+            wait()
         end
     end
+    
+    -- Fora do loop, após o loop ser encerrado
+    print("O loop 'autocollectchest' foi encerrado.")
 end
 
 local function autocatch()
@@ -414,6 +407,77 @@ function Knyroll()
     end
 end
 
+local selectionStory = nil
+local selectionDifficulty = nil
+
+-- Tabela de mapeamento para níveis de história
+local storylevels = {
+    ['DBZ RAID'] = 'DBZ',
+    ['One Piece Raid'] = 'OnePiece',
+    ['MHA Raid'] = 'MHA',
+    ['Naruto Raid'] = 'Naruto',
+    ['Jojo Raid'] = 'Jojo',
+    ['Demon Slayer Raid'] = 'DemonSlayer',
+}
+
+-- Tabela de mapeamento para dificuldades
+local difficulties = {
+    ['Easy'] = 'Easy',
+    ['Medium'] = 'Medium',
+    ['Hard'] = 'Hard',
+}
+
+local function handlestory(storyname, storylevel, difficulty)
+    while getgenv()[storyname] == true do
+        local args = {
+            [1] = workspace:WaitForChild("Worlds"):WaitForChild("Hub"):WaitForChild("DungeonTemple"):WaitForChild("1"):WaitForChild("RaidRooms"):WaitForChild("Room4"),
+            [2] = true
+        }
+
+        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Raid"):WaitForChild("SetInRaid"):FireServer(unpack(args))
+        local args = {
+            [1] = workspace:WaitForChild("Worlds"):WaitForChild("Hub"):WaitForChild("DungeonTemple"):WaitForChild("1"):WaitForChild("RaidRooms"):WaitForChild("Room4"),
+            [2] = "HoverWorld",
+            [3] = storylevel
+        }
+
+        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Raid"):WaitForChild("SetRaidSetting"):FireServer(unpack(args))
+        local args = {
+            [1] = workspace:WaitForChild("Worlds"):WaitForChild("Hub"):WaitForChild("DungeonTemple"):WaitForChild("1"):WaitForChild("RaidRooms"):WaitForChild("Room4"),
+            [2] = "TargetWorld",
+            [3] = storylevel
+        }
+
+        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Raid"):WaitForChild("SetRaidSetting"):FireServer(unpack(args))
+        local args = {
+            [1] = workspace:WaitForChild("Worlds"):WaitForChild("Hub"):WaitForChild("DungeonTemple"):WaitForChild("1"):WaitForChild("RaidRooms"):WaitForChild("Room4"),
+            [2] = "Difficulty",
+            [3] = difficulty
+        }
+
+        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Raid"):WaitForChild("SetRaidSetting"):FireServer(unpack(args))
+        local args = {
+            [1] = workspace:WaitForChild("Worlds"):WaitForChild("Hub"):WaitForChild("DungeonTemple"):WaitForChild("1"):WaitForChild("RaidRooms"):WaitForChild("Room4")
+        }
+
+        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Raid"):WaitForChild("StartRaid"):FireServer(unpack(args))
+
+        wait(1)
+    end
+end
+
+-- Função para controlar as raids
+local function autostoryToggle()
+    local storylevel = storylevels[selectionStory]
+    local difficulty = difficulties[selectionDifficulty]
+
+    if selectionStory and selectionDifficulty then
+        getgenv()[selectionStory] = not getgenv()[selectionStory]
+        handlestory(selectionStory, storylevel, difficulty)
+    end
+end
+
+
 warn('[TEMPEST HUB] Checking Functions')
 wait(1)
 
@@ -452,6 +516,40 @@ LeftGroupBox:AddToggle('Catch Spirit', {
 })
 
 local RightGroupBox = Tabs.Farm:AddRightGroupbox('Raid')
+
+-- Adicione dropdown para selecionar a história
+local storyDropdown = RightGroupBox:AddDropdown('Select Raid', {
+    Values = {
+        'DBZ RAID', 'One Piece Raid', 'MHA Raid', 'Naruto Raid', 'Jojo Raid', 'Demon Slayer Raid'
+    },
+    Default = 1,
+    Multi = false,
+    Text = 'Select Raid',
+    Callback = function(Value)
+        selectionStory = Value
+    end
+})
+
+-- Adicione dropdown para selecionar a dificuldade
+local difficultyDropdown = RightGroupBox:AddDropdown('Select Difficulty', {
+    Values = {'Easy', 'Medium', 'Hard'},
+    Default = 1,
+    Multi = false,
+    Text = 'Select Difficulty',
+    Callback = function(Value)
+        selectionDifficulty = Value
+    end
+})
+
+-- Adicione botão de alternância para o Autostory
+RightGroupBox:AddToggle('Auto Enter Raid', {
+    Text = 'Auto Enter Raid',
+    Default = false,
+    Tooltip = 'Auto Enter Raid',
+    Callback = function()
+        autostoryToggle()
+    end
+})
 
 RightGroupBox:AddToggle('Auto Raid', {
     Text = 'Auto Raid',
