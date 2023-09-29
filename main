@@ -99,12 +99,12 @@ local function autoraid()
                     local ginyu = namekR:FindFirstChild("Ginyu")
                     if ginyu then
                         -- If Ginyu is present, teleport above him with a height of 5 units
-                        cframeDoPersonagem = GetCFrameAbove(ginyu.CFrame.p, 5)
+                        cframeDoPersonagem = GetCFrameAbove(ginyu.CFrame.p)
                     else
                         -- Teleport above the first enemy found in the workspace with a height of 30 units
                         for _, enemy in pairs(namekR:GetChildren()) do
                             if enemy:IsA("Model") then
-                                cframeDoPersonagem = GetCFrameAbove(enemy:GetPrimaryPartCFrame().p, 30)
+                                cframeDoPersonagem = GetCFrameAbove(enemy:GetPrimaryPartCFrame().p, 50)
                                 break -- Stop iterating after finding the first enemy
                             end
                         end
@@ -123,18 +123,56 @@ local function autoraid()
         else
             print("workspace.Worlds does not exist")
         end
-        wait(1) -- Wait for a second before checking again (to avoid excessive loop execution)
+        wait() -- Wait for a second before checking again (to avoid excessive loop execution)
     end
 end
 
 local function autocollectchest()
     while getgenv().autocollectchest == true do
-        local raid = workspace.Worlds.Raids["1"]
-        if raid and raid.Zone9 and raid.Zone9.Chests and raid.Zone9.Chests:FindFirstChild("RaidChest") then
-            local raidChest = raid.Zone9.Chests:WaitForChild("RaidChest")
-            local targetCFrame = CFrame.new(4016.09473, -149.956055, 2765.06982)
-            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = targetCFrame
-            wait()  -- Espera um curto período de tempo para garantir que o jogador esteja na posição certa
+        -- Função para procurar recursivamente em uma tabela aninhada
+        function procurar_em_raids(tabela, chave_procurada)
+            -- Variável para rastrear se o item foi encontrado
+            local encontrado = false
+
+            -- Função auxiliar para verificar se um item foi encontrado recursivamente
+            local function verificar(tabela)
+                if type(tabela) == "table" then
+                    for chave, valor in pairs(tabela) do
+                        if chave == chave_procurada then
+                            encontrado = true -- Define encontrado como true se a chave correspondente for encontrada
+                        elseif type(valor) == "table" then
+                            verificar(valor) -- Chama a função verificar recursivamente
+                        end
+                    end
+                end
+            end
+
+            -- Inicia a verificação
+            verificar(tabela)
+
+            -- Retorna true se o item foi encontrado, caso contrário, retorna false
+            return encontrado
+        end
+
+        -- Exemplo de uso
+        raids = {}
+
+        for i = 1, 100 do
+            raids[tostring(i)] = {
+                Zone = {
+                    Chests = {
+                        RaidChest = "Item encontrado na zona " .. i
+                    }
+                }
+            }
+        end
+
+        chave_procurada = "RaidChest"
+        encontrado = procurar_em_raids(raids, chave_procurada)
+
+        if encontrado then
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(4016.09473, -149.956055, 5765.06982, 0, 0, 1, 0, 1, -0, -1, 0, 0)
+            wait(1)
             game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.E, false, game)
             wait(2)
             local args = {
@@ -142,12 +180,22 @@ local function autocollectchest()
             }
             
             game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Player"):WaitForChild("Teleport"):FireServer(unpack(args))
+            
+            -- Assuming RaidChest is a variable that holds the object you want to destroy
+            local RaidChest = game.Workspace:FindFirstChild("RaidChest")
+            if RaidChest then
+                RaidChest:Destroy() -- Destroy the object
+            end
+            
+            wait(2)
+            print("Item encontrado.")
         else
-            break
+            print("Nenhum item encontrado.")
         end
-        wait()  -- Evita o loop infinito consumindo muita CPU
+        wait(1)  -- Evita o loop infinito consumindo muita CPU
     end
 end
+
 
 local function autocatch()
     while getgenv().autocatch == true do
@@ -363,85 +411,248 @@ end
 
 function narutoroll()
     while getgenv().narutoroll == true do
-        local args = {
-            [1] = workspace:WaitForChild("Worlds"):WaitForChild("Naruto"):WaitForChild("NarutoOrb"),
-            [2] = 2
-        }
-
-        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Orbs"):WaitForChild("OpenOrbs"):FireServer(unpack(args))
+        -- Obtém a instância 'Jojo' de ReplicatedStorage.UnloadedWorlds
+        local NarutoWorld = game:GetService("ReplicatedStorage").UnloadedWorlds:FindFirstChild("Naruto")
         wait()
+
+        if NarutoWorld then
+            -- Move a instância 'Jojo' para o workspace.Worlds se ela existir
+            wait()
+            NarutoWorld.Parent = workspace.Worlds
+        else
+            wait()
+            warn("A instância 'Jojo' não foi encontrada em ReplicatedStorage.UnloadedWorlds.")
+        end
+
+        -- Verifica se a instância 'BizarreOrb' existe em workspace.Worlds.Jojo
+        local NarutoOrb = workspace:WaitForChild("Worlds"):WaitForChild("Naruto"):FindFirstChild("NarutoOrb")
+        wait()
+
+        if NarutoOrb then
+            -- Cria um array de argumentos para a função FireServer
+            local args = {
+                [1] = NarutoOrb,
+                [2] = 3
+            }
+
+            -- Chama a função FireServer no objeto Remote.Orbs.OpenOrbs de ReplicatedStorage
+            game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Orbs"):WaitForChild("OpenOrbs"):FireServer(unpack(args))
+            wait()
+        else
+            warn("A instância 'BizarreOrb' não foi encontrada em workspace.Worlds.Jojo.")
+        end
     end
 end
 
 function mharoll()
     while getgenv().mharoll == true do
-        local args = {
-            [1] = workspace:WaitForChild("Worlds"):WaitForChild("MHA"):WaitForChild("MHAOrb"),
-            [2] = 3
-        }
-        
-        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Orbs"):WaitForChild("OpenOrbs"):FireServer(unpack(args))
+        -- Obtém a instância 'Jojo' de ReplicatedStorage.UnloadedWorlds
+        local MHAWorld = game:GetService("ReplicatedStorage").UnloadedWorlds:FindFirstChild("MHA")
         wait()
+
+        if MHAWorld then
+            -- Move a instância 'Jojo' para o workspace.Worlds se ela existir
+            MHAWorld.Parent = workspace.Worlds
+            wait()
+        else
+            wait()
+            warn("A instância 'Jojo' não foi encontrada em ReplicatedStorage.UnloadedWorlds.")
+        end
+
+        -- Verifica se a instância 'BizarreOrb' existe em workspace.Worlds.Jojo
+        local MHAOrb = workspace:WaitForChild("Worlds"):WaitForChild("MHA"):FindFirstChild("MHAOrb")
+        wait()
+
+        if MHAOrb then
+            -- Cria um array de argumentos para a função FireServer
+            local args = {
+                [1] = MHAOrb,
+                [2] = 3
+            }
+
+            -- Chama a função FireServer no objeto Remote.Orbs.OpenOrbs de ReplicatedStorage
+            game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Orbs"):WaitForChild("OpenOrbs"):FireServer(unpack(args))
+            wait()
+        else
+            wait()
+            warn("A instância 'BizarreOrb' não foi encontrada em workspace.Worlds.Jojo.")
+        end
     end
 end
 
 function OProll()
     while getgenv().OProll == true do
-        local args = {
-            [1] = workspace:WaitForChild("Worlds"):WaitForChild("OnePiece"):WaitForChild("OnePieceOrb"),
-            [2] = 3
-        }
-        
-        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Orbs"):WaitForChild("OpenOrbs"):FireServer(unpack(args))        
+        -- Obtém a instância 'Jojo' de ReplicatedStorage.UnloadedWorlds
+        local OPWorld = game:GetService("ReplicatedStorage").UnloadedWorlds:FindFirstChild("OnePiece")
         wait()
+
+        if OPWorld then
+            wait()
+            -- Move a instância 'Jojo' para o workspace.Worlds se ela existir
+            OPWorld.Parent = workspace.Worlds
+        else
+            wait()
+            warn("A instância 'Jojo' não foi encontrada em ReplicatedStorage.UnloadedWorlds.")
+        end
+
+        -- Verifica se a instância 'BizarreOrb' existe em workspace.Worlds.Jojo
+        local OnePieceOrb = workspace:WaitForChild("Worlds"):WaitForChild("OnePiece"):FindFirstChild("OnePieceOrb")
+        wait()
+
+        if OnePieceOrb then
+            -- Cria um array de argumentos para a função FireServer
+            local args = {
+                [1] = OnePieceOrb,
+                [2] = 3
+            }
+
+            -- Chama a função FireServer no objeto Remote.Orbs.OpenOrbs de ReplicatedStorage
+            game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Orbs"):WaitForChild("OpenOrbs"):FireServer(unpack(args))
+            wait()
+        else
+            warn("A instância 'BizarreOrb' não foi encontrada em workspace.Worlds.Jojo.")
+        end
     end
 end
 
 function DBZroll()
     while getgenv().DBZroll == true do
-        local args = {
-            [1] = workspace:WaitForChild("Worlds"):WaitForChild("DBZ"):WaitForChild("DBZOrb"),
-            [2] = 3
-        }
-        
-        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Orbs"):WaitForChild("OpenOrbs"):FireServer(unpack(args))        
+        -- Obtém a instância 'Jojo' de ReplicatedStorage.UnloadedWorlds
+        local DBZWorld = game:GetService("ReplicatedStorage").UnloadedWorlds:FindFirstChild("DBZ")
         wait()
+
+        if DBZWorld then
+            wait()
+            -- Move a instância 'Jojo' para o workspace.Worlds se ela existir
+            DBZWorld.Parent = workspace.Worlds
+        else
+            wait()
+            warn("A instância 'Jojo' não foi encontrada em ReplicatedStorage.UnloadedWorlds.")
+        end
+
+        -- Verifica se a instância 'BizarreOrb' existe em workspace.Worlds.Jojo
+        local DBZOrb = workspace:WaitForChild("Worlds"):WaitForChild("DBZ"):FindFirstChild("DBZOrb")
+
+        if DBZOrb then
+            -- Cria um array de argumentos para a função FireServer
+            local args = {
+                [1] = DBZOrb,
+                [2] = 3
+            }
+
+            -- Chama a função FireServer no objeto Remote.Orbs.OpenOrbs de ReplicatedStorage
+            game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Orbs"):WaitForChild("OpenOrbs"):FireServer(unpack(args))
+            wait()
+        else
+            warn("A instância 'BizarreOrb' não foi encontrada em workspace.Worlds.Jojo.")
+        end
     end
 end
 
 function Jojoroll()
     while getgenv().Jojoroll == true do
-        local args = {
-            [1] = workspace:WaitForChild("Worlds"):WaitForChild("Jojo"):WaitForChild("BizarreOrb"),
-            [2] = 3
-        }
-        
-        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Orbs"):WaitForChild("OpenOrbs"):FireServer(unpack(args))        
+        -- Obtém a instância 'Jojo' de ReplicatedStorage.UnloadedWorlds
+        local jojoWorld = game:GetService("ReplicatedStorage").UnloadedWorlds:FindFirstChild("Jojo")
         wait()
+
+        if jojoWorld then
+            wait()
+            -- Move a instância 'Jojo' para o workspace.Worlds se ela existir
+            jojoWorld.Parent = workspace.Worlds
+        else
+            wait()
+            warn("A instância 'Jojo' não foi encontrada em ReplicatedStorage.UnloadedWorlds.")
+        end
+
+        -- Verifica se a instância 'BizarreOrb' existe em workspace.Worlds.Jojo
+        local bizarreOrb = workspace:WaitForChild("Worlds"):WaitForChild("Jojo"):FindFirstChild("BizarreOrb")
+
+        if bizarreOrb then
+            -- Cria um array de argumentos para a função FireServer
+            local args = {
+                [1] = bizarreOrb,
+                [2] = 3
+            }
+
+            -- Chama a função FireServer no objeto Remote.Orbs.OpenOrbs de ReplicatedStorage
+            game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Orbs"):WaitForChild("OpenOrbs"):FireServer(unpack(args))
+
+            wait()
+        else
+            warn("A instância 'BizarreOrb' não foi encontrada em workspace.Worlds.Jojo.")
+        end
     end
 end
 
 function Knyroll()
     while getgenv().Knyroll == true do
-        local args = {
-            [1] = workspace:WaitForChild("Worlds"):WaitForChild("DemonSlayer"):WaitForChild("DemonOrb"),
-            [2] = 3
-        }
-        
-        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Orbs"):WaitForChild("OpenOrbs"):FireServer(unpack(args))     
+        -- Obtém a instância 'Jojo' de ReplicatedStorage.UnloadedWorlds
+        local KnyWorld = game:GetService("ReplicatedStorage").UnloadedWorlds:FindFirstChild("DemonSlayer")
         wait()
+
+        if KnyWorld then
+            wait()
+            -- Move a instância 'Jojo' para o workspace.Worlds se ela existir
+            KnyWorld.Parent = workspace.Worlds
+        else
+            wait()
+            warn("A instância 'Jojo' não foi encontrada em ReplicatedStorage.UnloadedWorlds.")
+        end
+
+        -- Verifica se a instância 'BizarreOrb' existe em workspace.Worlds.Jojo
+        local DemonOrb = workspace:WaitForChild("Worlds"):WaitForChild("DemonSlayer"):FindFirstChild("DemonOrb")
+        wait()
+
+        if DemonOrb then
+            -- Cria um array de argumentos para a função FireServer
+            local args = {
+                [1] = DemonOrb,
+                [2] = 3
+            }
+
+            -- Chama a função FireServer no objeto Remote.Orbs.OpenOrbs de ReplicatedStorage
+            game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Orbs"):WaitForChild("OpenOrbs"):FireServer(unpack(args))
+
+            wait()
+        else
+            warn("A instância 'BizarreOrb' não foi encontrada em workspace.Worlds.Jojo.")
+        end
     end
 end
 
 function jjkroll()
     while getgenv().jjkroll == true do
-        local args = {
-            [1] = workspace:WaitForChild("Worlds"):WaitForChild("JJK"):WaitForChild("JJKOrb"),
-            [2] = 3
-        }
-        
-        game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Orbs"):WaitForChild("OpenOrbs"):FireServer(unpack(args))
+        -- Obtém a instância 'Jojo' de ReplicatedStorage.UnloadedWorlds
+        local JJKWorld = game:GetService("ReplicatedStorage").UnloadedWorlds:FindFirstChild("JJK")
         wait()
+
+        if JJKWorld then
+            wait()
+            -- Move a instância 'Jojo' para o workspace.Worlds se ela existir
+            JJKWorld.Parent = workspace.Worlds
+        else
+            wait()
+            warn("A instância 'Jojo' não foi encontrada em ReplicatedStorage.UnloadedWorlds.")
+        end
+
+        -- Verifica se a instância 'BizarreOrb' existe em workspace.Worlds.Jojo
+        local JJKOrb = workspace:WaitForChild("Worlds"):WaitForChild("JJK"):FindFirstChild("JJKOrb")
+        wait()
+
+        if JJKOrb then
+            -- Cria um array de argumentos para a função FireServer
+            local args = {
+                [1] = JJKOrb,
+                [2] = 3
+            }
+
+            -- Chama a função FireServer no objeto Remote.Orbs.OpenOrbs de ReplicatedStorage
+            game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Orbs"):WaitForChild("OpenOrbs"):FireServer(unpack(args))
+
+            wait()
+        else
+            warn("A instância 'BizarreOrb' não foi encontrada em workspace.Worlds.Jojo.")
+        end
     end
 end
 
@@ -615,7 +826,7 @@ local Tabs = {
     Farm = Window:AddTab('Roll'),
 }
 
-local LeftGroupBox = Tabs.Farm:AddLeftGroupbox('Roll Unit')
+local LeftGroupBox = Tabs.Farm:AddLeftGroupbox('Roll Unit (Load The World First)')
 
 LeftGroupBox:AddToggle('DBZ Egg', {
     Text = 'DBZ Egg',
