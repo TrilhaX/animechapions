@@ -104,7 +104,7 @@ local function autoraid()
                         -- Teleport above the first enemy found in the workspace with a height of 30 units
                         for _, enemy in pairs(namekR:GetChildren()) do
                             if enemy:IsA("Model") then
-                                cframeDoPersonagem = GetCFrameAbove(enemy:GetPrimaryPartCFrame().p, 50)
+                                cframeDoPersonagem = GetCFrameAbove(enemy:GetPrimaryPartCFrame().p, 30)
                                 break -- Stop iterating after finding the first enemy
                             end
                         end
@@ -127,75 +127,26 @@ local function autoraid()
     end
 end
 
+
 local function autocollectchest()
     while getgenv().autocollectchest == true do
-        -- Função para procurar recursivamente em uma tabela aninhada
-        function procurar_em_raids(tabela, chave_procurada)
-            -- Variável para rastrear se o item foi encontrado
-            local encontrado = false
-
-            -- Função auxiliar para verificar se um item foi encontrado recursivamente
-            local function verificar(tabela)
-                if type(tabela) == "table" then
-                    for chave, valor in pairs(tabela) do
-                        if chave == chave_procurada then
-                            encontrado = true -- Define encontrado como true se a chave correspondente for encontrada
-                        elseif type(valor) == "table" then
-                            verificar(valor) -- Chama a função verificar recursivamente
-                        end
-                    end
-                end
-            end
-
-            -- Inicia a verificação
-            verificar(tabela)
-
-            -- Retorna true se o item foi encontrado, caso contrário, retorna false
-            return encontrado
-        end
-
-        -- Exemplo de uso
-        raids = {}
-
-        for i = 1, 100 do
-            raids[tostring(i)] = {
-                Zone = {
-                    Chests = {
-                        RaidChest = "Item encontrado na zona " .. i
-                    }
-                }
-            }
-        end
-
-        chave_procurada = "RaidChest"
-        encontrado = procurar_em_raids(raids, chave_procurada)
-
-        if encontrado then
-            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(4016.09473, -149.956055, 5765.06982, 0, 0, 1, 0, 1, -0, -1, 0, 0)
+        local enemiesFolder = workspace.Worlds.Raids:FindFirstChild("Enemies")
+        
+        if enemiesFolder == nil or #enemiesFolder:GetChildren() == 0 then
+            game.Players.LocalPlayer.Character:MoveTo(Vector3.new(4016.09473, -149.956055, 5765.06982, 0, 0, 1, 0, 1, -0, -1, 0, 0))
             wait(1)
             game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.E, false, game)
             wait(2)
             local args = {
                 [1] = "Hub"
             }
-            
             game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Player"):WaitForChild("Teleport"):FireServer(unpack(args))
-            
-            -- Assuming RaidChest is a variable that holds the object you want to destroy
-            local RaidChest = game.Workspace:FindFirstChild("RaidChest")
-            if RaidChest then
-                RaidChest:Destroy() -- Destroy the object
-            end
-            
-            wait(2)
-            print("Item encontrado.")
         else
-            print("Nenhum item encontrado.")
+            print("Há inimigos no mundo das Raids.")
         end
-        wait(1)  -- Evita o loop infinito consumindo muita CPU
+        wait(5) -- Espere 5 segundos antes da próxima verificação
     end
 end
-
 
 local function autocatch()
     while getgenv().autocatch == true do
@@ -678,6 +629,10 @@ local difficulties = {
     ['Hard'] = 'Hard',
 }
 
+local selectionStory = nil
+local selectionDifficulty = nil
+
+-- Function to handle raids
 local function handlestory(storyname, storylevel, difficulty)
     while getgenv()[storyname] == true do
         local args = {
@@ -713,11 +668,18 @@ local function handlestory(storyname, storylevel, difficulty)
 
         game:GetService("ReplicatedStorage"):WaitForChild("Remote"):WaitForChild("Raid"):WaitForChild("StartRaid"):FireServer(unpack(args))
 
+        if getgenv()["AutoEnterRaid"] == true then
+            -- Teleport the player to a specific location (replace with your desired location)
+            local teleportTarget = workspace:WaitForChild("Worlds"):WaitForChild("Hub"):WaitForChild("DungeonTemple"):WaitForChild("1"):WaitForChild("RaidRooms"):WaitForChild("Room4"):FindFirstChild("TeleportTarget")
+            if teleportTarget then
+                game.Players.LocalPlayer.Character:MoveTo(teleportTarget.Position)
+            end
+        end
+
         wait(1)
     end
 end
 
--- Função para controlar as raids
 local function autostoryToggle()
     local storylevel = storylevels[selectionStory]
     local difficulty = difficulties[selectionDifficulty]
@@ -727,7 +689,6 @@ local function autostoryToggle()
         handlestory(selectionStory, storylevel, difficulty)
     end
 end
-
 
 warn('[TEMPEST HUB] Checking Functions')
 wait(1)
@@ -781,7 +742,7 @@ local storyDropdown = RightGroupBox:AddDropdown('Select Raid', {
     end
 })
 
--- Adicione dropdown para selecionar a dificuldade
+-- Add dropdown to select the difficulty
 local difficultyDropdown = RightGroupBox:AddDropdown('Select Difficulty', {
     Values = {'Easy', 'Medium', 'Hard'},
     Default = 1,
@@ -792,13 +753,15 @@ local difficultyDropdown = RightGroupBox:AddDropdown('Select Difficulty', {
     end
 })
 
--- Adicione botão de alternância para o Autostory
 RightGroupBox:AddToggle('Auto Enter Raid', {
     Text = 'Auto Enter Raid',
     Default = false,
     Tooltip = 'Auto Enter Raid',
-    Callback = function()
-        autostoryToggle()
+    Callback = function(value)
+        getgenv()["AutoEnterRaid"] = value
+        if value == true then
+            autostoryToggle() -- Start handling the raid immediately when the toggle is enabled
+        end
     end
 })
 
