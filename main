@@ -104,7 +104,7 @@ local function autoraid()
                         -- Teleport above the first enemy found in the workspace with a height of 30 units
                         for _, enemy in pairs(namekR:GetChildren()) do
                             if enemy:IsA("Model") then
-                                cframeDoPersonagem = GetCFrameAbove(enemy:GetPrimaryPartCFrame().p, 30)
+                                cframeDoPersonagem = GetCFrameAbove(enemy:GetPrimaryPartCFrame().p, 65)
                                 break -- Stop iterating after finding the first enemy
                             end
                         end
